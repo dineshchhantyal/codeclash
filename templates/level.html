@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Level {{ level_id }} - {{ level['name'] }}</title>
+
+    <!-- CodeMirror CDN links -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/javascript-hint.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Level {{ level_id }} - {{ level['name'] }}</h2>
+      <p>Hello, {{ player_name }}! Collect all {{ level['gems'] }} gems!</p>
+
+      <div class="playground">
+        <div class="playground-left">
+          <div class="instructions">
+            <h3>Instructions</h3>
+            <p>
+              Use the commands <code>move('up')</code>,
+              <code>move('down')</code>, <code>move('right')</code>,
+              <code>move('left')</code> to move the hunter.
+            </p>
+            <p>
+              Collect all the gems to complete the level. You can enter multiple
+              commands separated by new lines.
+            </p>
+            <p><strong>Time remaining: <span id="timer">02:00</span></strong></p>
+          </div>
+
+          <div class="textarea-container">
+            <!-- CodeMirror will replace this textarea -->
+            <textarea
+              id="commands"
+              placeholder="Enter your moves here (e.g., up, down)"
+            ></textarea>
+            <button onclick="submitMoves()" id="submit-btn">Submit Moves</button>
+            <p id="message"></p>
+          </div>
+        </div>
+
+        <div class="playground-right">
+          <div class="game-area">
+            {% for row in range(6) %} {% for col in range(8) %}
+            <div></div>
+            {% endfor %} {% endfor %}
+
+            <img
+              id="hunter"
+              src="{{ url_for('static', filename='lion.png') }}"
+              alt="Hunter"
+              style="top: 0px; left: 0px"
+            />
+
+            {% for gem in level['gem_positions'] %}
+            <img
+              class="gem"
+              src="{{ url_for('static', filename='hippo.png') }}"
+              alt="Gem"
+              style="top: {{ gem[0] * level['scale']}}px; left: {{ gem[1] * level['scale'] }}px;"
+            />
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <a href="{{ url_for('reset') }}" id="back">Back to Home</a>
+    </div>
+
+    <script>
+      // Helper function to introduce delay
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      // Timer variables
+      let timerInterval;
+      let timeRemaining = 120; // 2 minutes in seconds
+
+      // Function to start the timer
+      function startTimer() {
+        timerInterval = setInterval(function () {
+          timeRemaining--;
+          const minutes = Math.floor(timeRemaining / 60);
+          const seconds = timeRemaining % 60;
+          document.getElementById('timer').textContent =
+            (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+          if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('message').textContent = 'Time\'s up! You ran out of time!';
+            document.querySelector('button').disabled = true;
+            disableGame(); // Disable the game if time runs out
+            gaveOver();
+          }
+        }, 1000);
+      }
+
+
+      // Disable game when time is up
+      function disableGame() {
+        const textarea = document.getElementById('commands');
+        const button = document.querySelector('button');
+        textarea.disabled = true;
+        button.disabled = true;
+      }
+
+      // Function to move the hunter based on commands
+      async function moveHunter(moves) {
+        const hunter = document.getElementById('hunter');
+        let top = parseInt(hunter.style.top) || 0;
+        let left = parseInt(hunter.style.left) || 0;
+
+        for (let move of moves) {
+          if (move === "move('up')") top -= 100;
+          else if (move === "move('down')") top += 100;
+          else if (move === "move('left')") left -= 100;
+          else if (move === "move('right')") left += 100;
+
+          await sleep(500);
+
+          hunter.style.top = `${top}px`;
+          hunter.style.left = `${left}px`;
+
+          // Check for collision with any gem
+          const gems = document.getElementsByClassName('gem');
+          for (let gem of gems) {
+            if (parseInt(gem.style.top) === top && parseInt(gem.style.left) === left) {
+              gem.style.opacity = '0';
+            }
+          }
+        }
+
+        const gems = document.getElementsByClassName('gem');
+        let gemsCollected = Array.from(gems).filter(gem => gem.style.opacity === '0').length;
+
+        if (gemsCollected === gems.length) {
+          document.getElementById('message').textContent = 'Congratulations! You have collected all gems!';
+          setTimeout(() => {
+            window.location.href = `/level/${parseInt({{ level_id }}) + 1}`;
+          }, 1500);
+        } else {
+          document.getElementById('message').textContent = 'You have not collected all gems. Please try again!';
+        }
+      }
+
+      // Function to reset the gems
+      function gemsReset() {
+        const gems = document.getElementsByClassName('gem');
+        for (let gem of gems) {
+          gem.style.opacity = '1';
+        }
+      }
+
+      // Function to submit moves to the backend for validation
+      function submitMoves() {
+        const hunter = document.getElementById('hunter');
+        hunter.style.top = '0px';
+        hunter.style.left = '0px';
+        gemsReset();
+
+        const moves = document.getElementById('commands').value.split('\n').map(move => move.trim());
+        console.log(moves);
+        moveHunter(moves);
+      }
+
+      // Initialize CodeMirror for the textarea
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the CodeMirror editor
+        const editor = CodeMirror.fromTextArea(document.getElementById('commands'), {
+          mode: "javascript",
+          lineNumbers: true,
+          theme: "dracula",
+          extraKeys: { "Ctrl-Space": "autocomplete" },
+          direction: 'ltr',
+          hintOptions: {
+            hints: function(cm) {
+              const commands = [
+                "move('up')",
+                "move('down')",
+                "move('left')",
+                "move('right')"
+              ];
+              return { list: commands };
+            }
+          }
+        });
+
+        // Ensure the editor has a specific height and is responsive
+        editor.setSize("100%", "200px");  // Full width, fixed height
+
+        // Update the submitMoves function to use the editor's getValue()
+        function submitMoves() {
+          const hunter = document.getElementById('hunter');
+          hunter.style.top = '0px';
+          hunter.style.left = '0px';
+          gemsReset();
+
+          // Get the moves from the editor instead of the textarea
+          const moves = editor.getValue().split('\n').map(move => move.trim());
+
+          // Log the moves to debug
+          console.log(moves);
+
+          // Call the function to move the hunter based on the input moves
+          moveHunter(moves);
+        }
+
+        // Attach the submitMoves function to the button (you can also do this inline in HTML)
+        document.querySelector('button').addEventListener('click', submitMoves);
+
+        // Start the timer when the game starts
+        startTimer();
+      });
+    </script>
+  </body>
+</html>
+</html>

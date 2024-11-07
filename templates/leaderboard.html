@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeClash</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='home.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="banner">
+        <h1>Welcome to CodeClash</h1>
+        <p>Test your skills and climb the leaderboard!</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Leaderboard Section -->
+      <div class="leaderboards">
+        <!-- If winner, display a special message -->
+        {% if winner %}
+        <h2 class="winner-message">
+          Congratulations! You are the current winner!
+        </h2>
+        {% endif %}
+        <h2>Leaderboard</h2>
+        <ul class="leaderboard-list">
+          {% for leader in leaderboard %}
+          <li class="leaderboard-item">
+            <span class="player-name">{{ leader['player_name'] }}</span>
+            <span class="player-score">{{ leader['score'] }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Input Form Section -->
+      <form action="{{ url_for('start') }}" method="POST" class="player-form">
+        <div class="form-group">
+          <input
+            type="text"
+            name="player_name"
+            placeholder="Enter your name"
+            required
+            class="input-field"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="email"
+            name="player_email"
+            placeholder="Enter your email"
+            required
+            class="input-field"
+          />
+        </div>
+        <button type="submit" class="start-button">Start Game</button>
+      </form>
+    </div>
+  </body>
+</html>

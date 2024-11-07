@@ -1,0 +1,191 @@
+/* General container styling */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+p {
+  font-size: 18px;
+  color: #555;
+}
+
+/* Game board styling */
+.game-area {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 500px;
+  border: 2px solid #333;
+  margin: 20px auto;
+  background-color: #f0f0f0;
+  display: grid;
+  /* each box is 100 * 100 */
+  grid-template-columns: repeat(7, 100px);
+  grid-template-rows: repeat(5, 100px);
+  gap: 1px;
+  box-sizing: border-box;
+}
+
+.game-area div {
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.game-area img {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  transition: top 0.3s, left 0.3s ease-in-out;
+}
+
+/* Hunter character styling */
+#hunter {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Gem styling */
+.gem {
+  transition: opacity 0.5s ease-out;
+}
+
+/* UI elements styling */
+.textarea-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  width: 330px;
+}
+#commands {
+  width: 100%;
+}
+
+textarea {
+  width: 90%;
+  height: 120px;
+  padding: 10px;
+  font-size: 16px;
+  resize: none;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  margin: 10px 0;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.instructions {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 20px;
+  font-size: 16px;
+  text-align: left;
+  color: #333;
+}
+
+#message {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #d9534f;
+}
+
+/* Timer Styling */
+#timer {
+  font-size: 22px;
+  font-weight: bold;
+  color: #d9534f;
+  display: inline-block;
+  margin-top: 20px;
+}
+
+/* Playground styling */
+.playground {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  justify-items: center;
+  align-items: start;
+  margin-top: 40px;
+}
+
+.playground-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.playground-right {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .playground {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+
+  .game-area {
+    max-width: 90%;
+    height: 400px;
+  }
+
+  textarea {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h2 {
+    font-size: 22px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+
+  .game-area {
+    max-width: 100%;
+    height: 350px;
+  }
+
+  #timer {
+    font-size: 20px;
+  }
+}

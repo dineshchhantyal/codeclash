@@ -1,0 +1,173 @@
+/* Global Styles */
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+.container {
+  width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+}
+
+header {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.banner h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.banner p {
+  font-size: 18px;
+  margin-top: 10px;
+  opacity: 0.8;
+}
+
+/* Leaderboard Section */
+.leaderboards {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  width: 330px;
+}
+
+.leaderboards h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.leaderboard-header {
+  font-weight: 700;
+  background-color: #f0f4f8;
+}
+.winner-message {
+  color: #28a745;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 18px;
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+
+/* padding */
+.leaderboard-item span {
+  display: flex;
+  gap: 20px;
+}
+
+.player-name {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.player-score {
+  font-weight: bold;
+  color: #28a745;
+}
+
+/* Form Section */
+.player-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.start-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #0056b3;
+}
+
+.start-button:active {
+  background-color: #003366;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .banner h1 {
+    font-size: 28px;
+  }
+
+  .leaderboards h2 {
+    font-size: 20px;
+  }
+
+  .leaderboard-item {
+    font-size: 16px;
+  }
+
+  .input-field {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .start-button {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
