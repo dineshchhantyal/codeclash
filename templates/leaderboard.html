@@ -28,7 +28,13 @@
         {% endif %}
         <h2>Leaderboard</h2>
         <ul class="leaderboard-list">
-          {% for leader in leaderboard %}
+          <li class="leaderboard-item leaderboard-header">
+            <span class="player-name">Player Name</span>
+            <span class="player-score">Level</span>
+            </li>
+            {% for leader in leaderboard %}
+          </li>
+
           <li class="leaderboard-item">
             <span class="player-name">{{ leader['player_name'] }}</span>
             <span class="player-score">{{ leader['score'] }}</span>

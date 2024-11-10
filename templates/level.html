@@ -46,7 +46,7 @@
               Collect all the gems to complete the level. You can enter multiple
               commands separated by new lines.
             </p>
-            <p><strong>Time remaining: <span id="timer">02:00</span></strong></p>
+            <p><strong>Time remaining: <span id="timer">01:30</span></strong></p>
           </div>
 
           <div class="textarea-container">
@@ -87,8 +87,22 @@
 
       <a href="{{ url_for('reset') }}" id="back">Back to Home</a>
     </div>
+    <audio id="move-sound" src="{{ url_for('static', filename='move-sound.wav') }}"></audio>
+    <audio id="gem-collected" src="{{ url_for('static', filename='gem-collected.wav') }}"></audio>
+    <audio id="winner" src="{{ url_for('static', filename='winner.mp3') }}"></audio>
+    <audio id="time-up" src="{{ url_for('static', filename='time-up.wav') }}"></audio>
 
     <script>
+
+      // Function to play sound
+      function playSound(id) {
+        const sound = document.getElementById(id);
+        if (sound) {
+          sound.currentTime = 0; // Reset to the beginning
+          sound.play();
+        }
+      }
+
       // Helper function to introduce delay
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -96,7 +110,7 @@
 
       // Timer variables
       let timerInterval;
-      let timeRemaining = 120; // 2 minutes in seconds
+      let timeRemaining = 90; // 1 minutes 30 seconds
 
       // Function to start the timer
       function startTimer() {
@@ -109,9 +123,11 @@
 
           if (timeRemaining <= 0) {
             clearInterval(timerInterval);
+            playSound('time-up'); // Play sound when time is up
             document.getElementById('message').textContent = 'Time\'s up! You ran out of time!';
             document.querySelector('button').disabled = true;
             disableGame(); // Disable the game if time runs out
+
             gaveOver();
           }
         }, 1000);
@@ -138,7 +154,11 @@
           else if (move === "move('left')") left -= 100;
           else if (move === "move('right')") left += 100;
 
+          // Play move sound
+
           await sleep(500);
+          playSound('move-sound');
+
 
           hunter.style.top = `${top}px`;
           hunter.style.left = `${left}px`;
@@ -147,6 +167,7 @@
           const gems = document.getElementsByClassName('gem');
           for (let gem of gems) {
             if (parseInt(gem.style.top) === top && parseInt(gem.style.left) === left) {
+              playSound('gem-collected'); // Play sound when gem is collected
               gem.style.opacity = '0';
             }
           }
@@ -156,6 +177,7 @@
         let gemsCollected = Array.from(gems).filter(gem => gem.style.opacity === '0').length;
 
         if (gemsCollected === gems.length) {
+          playSound('winner'); // Play sound when all gems are collected
           document.getElementById('message').textContent = 'Congratulations! You have collected all gems!';
           setTimeout(() => {
             window.location.href = `/level/${parseInt({{ level_id }}) + 1}`;
@@ -189,23 +211,32 @@
       document.addEventListener('DOMContentLoaded', function() {
         // Initialize the CodeMirror editor
         const editor = CodeMirror.fromTextArea(document.getElementById('commands'), {
-          mode: "javascript",
+          mode: "python",
           lineNumbers: true,
           theme: "dracula",
           extraKeys: { "Ctrl-Space": "autocomplete" },
           direction: 'ltr',
+          autocorrect: true,
+
           hintOptions: {
-            hints: function(cm) {
+            completeSingle: false,
+            hint: function(cm) {
               const commands = [
-                "move('up')",
-                "move('down')",
-                "move('left')",
-                "move('right')"
+                { text: "up')", displayText: "move('up')" },
+                { text: "down')", displayText: "move('down')" },
+                { text: "left')", displayText: "move('left')" },
+                { text: "right')", displayText: "move('right')" }
               ];
-              return { list: commands };
+              return { list: commands, from: cm.getCursor(), to: cm.getCursor() };
             }
           }
         });
+
+        editor.on("inputRead", function(cm, change) {
+            if (change.text[0] === "'") {  // Customize to trigger autocomplete based on specific characters
+              CodeMirror.commands.autocomplete(cm);
+            }
+          });
 
         // Ensure the editor has a specific height and is responsive
         editor.setSize("100%", "200px");  // Full width, fixed height

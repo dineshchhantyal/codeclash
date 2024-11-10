@@ -40,7 +40,7 @@ levels = {
 @app.route('/')
 def home():
     leaderboard = pd.read_csv('static/leaderboard.csv')
-    leaderboard = leaderboard.sort_values(by='score', ascending=False).head(10)
+    leaderboard = leaderboard.sort_values(by='score', ascending=False).head(6)
 
     leaderboard_dict = leaderboard.to_dict(orient='records')
     print(leaderboard_dict)
@@ -58,16 +58,18 @@ def start():
 def level(level_id):
     if 'player_name' not in session:
         return redirect(url_for('home'))
-
+    level = None
     # Generate levels with unpredictable gem positions for higher levels
-    levels[level_id] = {
-        'name': f'{level_id} Gems',
-        'gems': int(level_id),
-        'gem_positions': generate_gem_positions(int(level_id)),
-        'scale': 100
-    }
-
-    level = levels.get(level_id)
+    if int(level_id) not in levels:
+        levels[level_id] = {
+            'name': f'{level_id} Gems',
+            'gems': int(level_id),
+            'gem_positions': generate_gem_positions(int(level_id)),
+            'scale': 100
+        }
+        level = levels.get(level_id)
+    else:
+        level = levels.get(int(level_id))
 
     session['current_level'] = level_id
     return render_template('level.html', level=level, level_id=level_id, player_name=session['player_name'])
@@ -96,7 +98,7 @@ def reset():
         leaderboard = pd.concat([leaderboard, player_df])
         # make score as int
         leaderboard['score'] = leaderboard['score'].astype(int)
-        leaderboard = leaderboard.sort_values(by='score', ascending=False).head(10)
+        leaderboard = leaderboard.sort_values(by='score', ascending=False).head(6)
 
         if not leaderboard.empty and session.get('player_name') == leaderboard.iloc[0]['player_name']:
             winner = True
